@@ -7,6 +7,7 @@ require("FontSinclair").add(Graphics);
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
+declare g;
 const welcome1 = "HELLO";
 const welcome2 = "MY NAME IS";
 const name = "Nik Martin";
@@ -30,56 +31,58 @@ const createBackground = () => {
 };
 
 const onTimer = () => {
+  //clear last screen update
   g.setColor(0, 0, 0);
   g.fillRect(0, 55, 128, 64);
   g.setColor(1, 1, 1);
   let d = new Date();
   g.setFontBitmap();
-  let t = days[d.getDay()] + "," + months[d.getMonth()] + " " + d.getDate() + " " + d.getHours() + ":" + d.getMinutes();
+  const t = `${days[d.getDay()]},${months[d.getMonth()]} ${d.getDate()} ${d.getHours()}:${d.getMinutes()}`;
   g.drawString(t, 0, 58);
-  let temp = (9 * E.getTemperature() / 5 + 32).toFixed(1) + "f";
+  const temp = `${(9 * E.getTemperature() / 5 + 32).toFixed(1)}f`;
 
   g.drawString(temp, g.getWidth() - g.stringWidth(temp), 58);
-
   g.flip();
 };
 createBackground();
 setInterval(onTimer, 5000); // 5
 onTimer();
-/*
+
+Bluetooth.on("data", d => Terminal.inject(d));
+Terminal.setConsole();
 
 // Two variables to update
 var boolean = false;
 var number = 50;
 // First menu
 var mainmenu = {
-  "" : {
-    "title" : "-- Main Menu --"
+  "": {
+    "title": "-- Pip Boy --"
   },
-  "Backlight On" : function() { LED1.set(); },
-  "Backlight Off" : function() { LED1.reset(); },
-  "Submenu" : function() { Pixl.menu(submenu); },
-  "A Boolean" : {
-    value : boolean,
-    format : v => v?"On":"Off",
-    onchange : v => { boolean=v; }
+  "Backlight On": function () { LED1.set(); },
+  "Backlight Off": function () { LED1.reset(); },
+  "Submenu": function () { Pixl.menu(submenu); },
+  "A Boolean": {
+    value: boolean,
+    format: v => v ? "On" : "Off",
+    onchange: v => { boolean = v; }
   },
-  "A Number" : {
-    value : number,
-    min:0,max:100,step:10,
-    onchange : v => { number=v; }
+  "A Number": {
+    value: number,
+    min: 0, max: 100, step: 10,
+    onchange: v => { number = v; }
   },
-  "Exit" : function() { Pixl.menu(); },
+  "Exit": function () { Pixl.menu(); },
 };
 // Submenu
 var submenu = {
-  "" : {
-    "title" : "-- SubMenu --"
+  "": {
+    "title": "-- SubMenu --"
   },
-  "One" : undefined, // do nothing
-  "Two" : undefined, // do nothing
-  "< Back" : function() { Pixl.menu(mainmenu); },
+  "One": undefined, // do nothing
+  "Two": undefined, // do nothing
+  "< Back": function () { Pixl.menu(mainmenu); },
 };
 // Actually display the menu
 Pixl.menu(mainmenu);
-*/
+
