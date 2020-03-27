@@ -14,32 +14,32 @@ const company = "Open Frame LLC";
 const h = g.getHeight();
 const w = g.getWidth();
 
-const createBackground=()=> {
+const createBackground = () => {
   g.clear();
   g.setFont8x16();
-  g.drawString(welcome1,(w-g.stringWidth(welcome1))/2,0);
+  g.drawString(welcome1, (w - g.stringWidth(welcome1)) / 2, -2);
   g.setFontSinclair();
-  g.drawString(welcome2,(w-g.stringWidth(welcome2))/2,13);
-  g.drawLine(0,21,w,21);
+  g.drawString(welcome2, (w - g.stringWidth(welcome2)) / 2, 10);
+  g.drawLine(0, 18, w, 18);
   g.setFont8x16();
-  g.drawString(name,(w-g.stringWidth(name))/2,28);
+  g.drawString(name, (w - g.stringWidth(name)) / 2, 26);
   g.setFont6x8();
-  g.drawString(company,(w-g.stringWidth(company))/2,48);
+  g.drawString(company, (w - g.stringWidth(company)) / 2, 48);
   g.setFontBitmap();
   g.flip();
 };
 
-const onTimer=()=> {
-  g.setColor(0,0,0);
-  g.fillRect(0,55,128,64);
-  g.setColor(1,1,1);
-  let d=new Date();
+const onTimer = () => {
+  g.setColor(0, 0, 0);
+  g.fillRect(0, 55, 128, 64);
+  g.setColor(1, 1, 1);
+  let d = new Date();
   g.setFontBitmap();
-  let t = days[d.getDay()]+","+months[d.getMonth()]+" "+d.getDate()+" "+d.getHours()+":"+d.getMinutes();
-  g.drawString(t,0,58);
-  let temp=(9*E.getTemperature()/5+32).toFixed(1)+"F";
+  let t = days[d.getDay()] + "," + months[d.getMonth()] + " " + d.getDate() + " " + d.getHours() + ":" + d.getMinutes();
+  g.drawString(t, 0, 58);
+  let temp = (9 * E.getTemperature() / 5 + 32).toFixed(1) + "f";
 
-  g.drawString(temp,g.getWidth()-g.stringWidth(temp),58);
+  g.drawString(temp, g.getWidth() - g.stringWidth(temp), 58);
 
   g.flip();
 };
@@ -83,4 +83,3 @@ var submenu = {
 // Actually display the menu
 Pixl.menu(mainmenu);
 */
-
