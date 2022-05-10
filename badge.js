@@ -75,9 +75,8 @@ const onTimer = () => {
 };
 
 setInterval(() => {
-  // console.log('on timer');
   onTimer();
-}, 5000); // 5
+}, 5000);
 
 
 
@@ -114,7 +113,8 @@ const doDisco = () => {
   }
 
 };
-
+//handle data sent from gadgetbridge
+/*
 global.GB = (data) => {
   toggleBacklight();
   g.setColor(0, 0, 0);
@@ -123,7 +123,7 @@ global.GB = (data) => {
   g.drawString(JSON.stringify(data), 0, 0);
   Terminal.inject(data);
 };
-
+*/
 // Two variables to update
 //let boolean = false;
 //let number = 50;
@@ -180,7 +180,7 @@ drawBadge();
 onTimer();
 //menu
 setWatch(() => {
-  console.log("Pressed");
+
   menu = !menu;
   if (menu) {
     toggleBacklight();
@@ -193,7 +193,7 @@ setWatch(() => {
 //disco
 setWatch(() => {
   if (!menu){
-    console.log("DISCO!");
+
     LED1.reset();
     isDisco=true;
     doDisco();
