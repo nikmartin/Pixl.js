@@ -1,20 +1,48 @@
 // Enable 'Set Current Time' in Settings -> Communications before sending
-
 // Niks Pixl.js Badge
 require("Font8x16").add(Graphics);
 require("Font6x8").add(Graphics);
 require("FontSinclair").add(Graphics);
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 const welcome1 = "HELLO";
 const welcome2 = "MY NAME IS";
 const name = "Nik Martin";
-const company = "Open Frame LLC";
+const company = "Patrick Engineering Inc.";
+
+const days = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday'];
+
+const months = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December'];
+
+let g;
+let menu = false;
+
 const h = g.getHeight();
 const w = g.getWidth();
 
-const createBackground = () => {
+NRF.nfcURL("https://nikmartin.js.org");
+const pad = (val) => {
+  return (val < 10 ? '0' : '') + val;
+};
+const drawBadge = () => {
   g.clear();
   g.setFont8x16();
   g.drawString(welcome1, (w - g.stringWidth(welcome1)) / 2, -2);
@@ -30,56 +58,145 @@ const createBackground = () => {
 };
 
 const onTimer = () => {
+  //clear last screen update
+  if (menu) {
+    return;
+  }
   g.setColor(0, 0, 0);
   g.fillRect(0, 55, 128, 64);
   g.setColor(1, 1, 1);
   let d = new Date();
   g.setFontBitmap();
-  let t = days[d.getDay()] + "," + months[d.getMonth()] + " " + d.getDate() + " " + d.getHours() + ":" + d.getMinutes();
+  const t = `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
   g.drawString(t, 0, 58);
-  let temp = (9 * E.getTemperature() / 5 + 32).toFixed(1) + "f";
-
+  const temp = `${(9 * E.getTemperature() / 5 + 32).toFixed(1)}f`;
   g.drawString(temp, g.getWidth() - g.stringWidth(temp), 58);
-
   g.flip();
 };
-createBackground();
-setInterval(onTimer, 5000); // 5
-onTimer();
-/*
 
+setInterval(() => {
+  onTimer();
+}, 5000);
+
+
+
+var backlight = false;
+const toggleBacklight = () => {
+  backlight = !backlight;
+  if (backlight) {
+    LED1.set();
+    if (menu) {
+      return;
+    }
+    let int = setInterval(() => {
+      backlight = !backlight;
+      LED1.reset();
+      clearInterval(int);
+    }, 5000);
+  } else {
+    LED1.reset();
+  }
+};
+
+const doDisco = () => {
+  if (isDisco) {
+
+    let ary = []
+    while (ary.length < 60) {
+      ary.push(100); //on
+      ary.push(400); //off
+    }
+    ary.push(0)
+    digitalPulse(LED1, 1, ary);
+    isDisco = false;
+    LED1.reset();
+  }
+
+};
+//handle data sent from gadgetbridge
+/*
+global.GB = (data) => {
+  toggleBacklight();
+  g.setColor(0, 0, 0);
+  g.fillRect(0, 0, 128, 6);
+  g.setColor(1, 1, 1);
+  g.drawString(JSON.stringify(data), 0, 0);
+  Terminal.inject(data);
+};
+*/
 // Two variables to update
-var boolean = false;
-var number = 50;
+//let boolean = false;
+//let number = 50;
+let isDisco = false;
 // First menu
 var mainmenu = {
-  "" : {
-    "title" : "-- Main Menu --"
+  "": {
+    "title": "-- Pip Boy --"
   },
-  "Backlight On" : function() { LED1.set(); },
-  "Backlight Off" : function() { LED1.reset(); },
-  "Submenu" : function() { Pixl.menu(submenu); },
-  "A Boolean" : {
-    value : boolean,
-    format : v => v?"On":"Off",
-    onchange : v => { boolean=v; }
+  "Backlight": () => {
+    toggleBacklight();
   },
-  "A Number" : {
-    value : number,
-    min:0,max:100,step:10,
-    onchange : v => { number=v; }
+
+  "Submenu": () => { Pixl.menu(submenu); },
+  /*
+  "A Boolean": {
+    value: boolean,
+    format: v => v ? "On" : "Off",
+    onchange: v => { boolean = v; }
   },
-  "Exit" : function() { Pixl.menu(); },
+  "A Number": {
+    value: number,
+    min: 0, max: 100, step: 10,
+    onchange: v => { number = v; }
+  },*/
+  "Disco": () => {
+    isDisco = true;
+    menu = false;
+    Pixl.menu();
+    drawBadge();
+    setTimeout(()=>{
+      doDisco();
+    },1000);
+
+  },
+  "Exit": () => {
+    menu = false;
+    Pixl.menu();
+    drawBadge();
+  },
 };
 // Submenu
 var submenu = {
-  "" : {
-    "title" : "-- SubMenu --"
+  "": {
+    "title": "-- SubMenu --"
   },
-  "One" : undefined, // do nothing
-  "Two" : undefined, // do nothing
-  "< Back" : function() { Pixl.menu(mainmenu); },
+  "One": undefined, // do nothing
+  "Two": undefined, // do nothing
+  "< Back": () => { Pixl.menu(mainmenu); },
 };
 // Actually display the menu
-Pixl.menu(mainmenu);
-*/
+
+drawBadge();
+onTimer();
+//menu
+setWatch(() => {
+
+  menu = !menu;
+  if (menu) {
+    toggleBacklight();
+    Pixl.menu(mainmenu);
+  } else {
+    Pixl.menu();
+    drawBadge();
+  }
+}, BTN2, { edge: "rising", debounce: 50, repeat: true });
+//disco
+setWatch(() => {
+  if (!menu){
+
+    LED1.reset();
+    isDisco=true;
+    doDisco();
+  }
+
+}, BTN4, { edge: "rising", debounce: 50, repeat: true });
